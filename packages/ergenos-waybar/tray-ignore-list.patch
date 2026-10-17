@@ -1,0 +1,68 @@
+--- a/include/modules/sni/item.hpp
++++ b/include/modules/sni/item.hpp
+@@ -86,6 +86,9 @@
+   gdouble distance_scrolled_y_ = 0;
+   // visibility of items with Status == Passive
+   bool show_passive_ = false;
++  std::set<std::string> ignored_ids_;
++  bool ignored_ = false;
++  Glib::ustring status_ = "passive";
+ 
+   const Bar& bar_;
+ 
+--- a/src/modules/sni/item.cpp
++++ b/src/modules/sni/item.cpp
+@@ -54,6 +54,11 @@
+     show_passive_ = config["show-passive-items"].asBool();
+   }
+ 
++  if (config["ignore-list"].isArray()) {
++    for (const auto& entry : config["ignore-list"]) {
++      if (entry.isString()) ignored_ids_.insert(entry.asString());
++    }
++  }
+   auto& window = const_cast<Bar&>(bar).window;
+   window.signal_configure_event().connect_notify(sigc::mem_fun(*this, &Item::onConfigure));
+   event_box.add(image);
+@@ -151,6 +156,9 @@
+       category = get_variant<std::string>(value);
+     } else if (name == "Id") {
+       id = get_variant<std::string>(value);
++      ignored_ = ignored_ids_.count(id) != 0;
++      setStatus(status_);
++      if (ignored_) spdlog::info("ErgenOS tray: hiding {}", id);
+ 
+       /*
+        * HACK: Electron apps seem to have the same ID, but tooltip seems correct, so use that as ID
+@@ -217,8 +225,9 @@
+ }
+ 
+ void Item::setStatus(const Glib::ustring& value) {
+-  Glib::ustring lower = value.lowercase();
+-  event_box.set_visible(show_passive_ || lower.compare("passive") != 0);
++  status_ = value.lowercase();
++  Glib::ustring lower = status_;
++  event_box.set_visible(!ignored_ && (show_passive_ || lower.compare("passive") != 0));
+ 
+   auto style = event_box.get_style_context();
+   for (const auto& class_name : style->list_classes()) {
+@@ -229,6 +238,7 @@
+     lower = "needs-attention";
+   }
+   style->add_class(lower);
++  if (ignored_) style->add_class("ergenos-hidden");
+ }
+ 
+ void Item::setCustomIcon(const std::string& id) {
+--- a/src/modules/sni/tray.cpp
++++ b/src/modules/sni/tray.cpp
+@@ -54,7 +54,8 @@
+     event_box_.set_visible(!children.empty());
+   } else {
+     event_box_.set_visible(!std::all_of(children.begin(), children.end(), [](Gtk::Widget* child) {
+-      return child->get_style_context()->has_class("passive");
++      return child->get_style_context()->has_class("passive") ||
++             child->get_style_context()->has_class("ergenos-hidden");
+     }));
+   }
+ 

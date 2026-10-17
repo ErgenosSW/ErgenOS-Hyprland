@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -euo pipefail
+config=/usr/share/ergenos-hyprland/fuzzel.ini
+case ${1:-apps} in
+    apps) exec fuzzel --config "$config" ;;
+    settings)
+        options="Audio\nNetwork\nFiles\nDisplays\nClipboard history\nClear clipboard history\nPower\nAutostart\n"
+        command -v ergenctl-gui >/dev/null && options+="System\n"
+        command -v ergenpac >/dev/null && options+="Applications\n"
+        command -v blueman-manager >/dev/null && options+="Bluetooth\n"
+        selection=$(printf "%b" "$options" | fuzzel --config "$config" --dmenu --only-match --prompt "Settings > ") || exit 0
+        case $selection in
+            Audio) exec pavucontrol ;;
+            Network) exec nm-connection-editor ;;
+            Files) exec nautilus --new-window ;;
+            System) exec ergenctl-gui ;;
+            Applications) exec ergenpac ;;
+            Bluetooth) exec blueman-manager ;;
+            Displays) exec python /usr/share/ergenos-hyprland/display-settings.py ;;
+            'Clipboard history') exec ergenos-hyprland-clipboard ;;
+            'Clear clipboard history') exec ergenos-hyprland-clipboard clear ;;
+            Power) exec python /usr/share/ergenos-hyprland/power-settings.py ;;
+            Autostart) exec python /usr/share/ergenos-hyprland/autostart-settings.py ;;
+        esac ;;
+    session)
+        selection=$(printf 'Lock\nLog out\nSuspend\nRestart\nPower off\n' | fuzzel --config "$config" --dmenu --prompt 'Session > ') || exit 0
+        case $selection in
+            Lock) loginctl lock-session ;;
+            'Log out') ergenos-hyprland-exit logout ;;
+            Suspend) systemctl suspend ;;
+            Restart|'Power off')
+                confirm=$(printf 'Cancel\nConfirm\n' | fuzzel --config "$config" --dmenu --prompt "$selection > ") || exit 0
+                [[ $confirm == Confirm ]] || exit 0
+                if [[ $selection == Restart ]]; then ergenos-hyprland-exit reboot; else ergenos-hyprland-exit poweroff; fi ;;
+        esac ;;
+    help) exec foot --config=/usr/share/ergenos-hyprland/foot.ini sh -c 'cat /usr/share/doc/ergenos-hyprland/shortcuts.txt; printf "\nPress Enter to close."; read -r answer' ;;
+    *) printf 'Usage: ergenos-hyprland-menu [apps|settings|session|help]\n' >&2; exit 2 ;;
+esac

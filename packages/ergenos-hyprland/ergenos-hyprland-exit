@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+"""Stop session-owned services before requesting compositor/system shutdown."""
+import fcntl
+import os
+from pathlib import Path
+import signal
+import subprocess
+import sys
+import time
+
+
+def main():
+    action = sys.argv[1] if len(sys.argv) == 2 else ''
+    if action not in ('logout', 'reboot', 'poweroff'):
+        raise SystemExit('Usage: ergenos-hyprland-exit [logout|reboot|poweroff]')
+    directory = os.environ.get('ERGENOS_HYPRLAND_RUNTIME')
+    if not directory:
+        raise RuntimeError('Use this command in the ErgenOS Hyprland session')
+    runtime = Path(directory)
+    # Share the supervisor lock until it has finished stopping its children.
+    with (runtime / 'services.lock').open('a') as lock:
+        pidfile = runtime / 'services.pid'
+        if pidfile.exists():
+            pid = int(pidfile.read_text().strip())
+            args = Path(f'/proc/{pid}/cmdline').read_bytes().split(b'\0')
+            if b'/usr/lib/ergenos-hyprland/session-services' not in args:
+                raise RuntimeError('Unexpected session service process; logout cancelled')
+            os.kill(pid, signal.SIGTERM)
+        deadline = time.monotonic() + 15
+        while True:
+            try:
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                break
+            except BlockingIOError:
+                if time.monotonic() >= deadline:
+                    raise RuntimeError('Session services did not stop; logout cancelled')
+                time.sleep(.05)
+        if action == 'logout':
+            result = subprocess.run(['hyprctl', 'dispatch', 'hl.dsp.exit()'], capture_output=True, text=True)
+            success = result.returncode == 0 and result.stdout.strip() == 'ok'
+        else:
+            result = subprocess.run(['systemctl', action], capture_output=True, text=True)
+            success = result.returncode == 0
+    if not success:
+        # Restore the panel/idle services if shutdown was refused.
+        subprocess.run(['hyprctl', 'dispatch', 'hl.dsp.exec_cmd("/usr/lib/ergenos-hyprland/session-services")'], check=False)
+        raise RuntimeError(result.stderr.strip() or result.stdout.strip() or 'Shutdown was refused')
+
+if __name__ == '__main__':
+    try:
+        main()
+    except (OSError, ValueError, RuntimeError) as error:
+        subprocess.run(['notify-send', '-u', 'critical', 'ErgenOS session', str(error)], check=False)
+        raise SystemExit(str(error))

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# ExecCondition: skip late notification activation after our session has stopped.
+# Other desktops retain the upstream service's activation behavior.
+set -eu
+case :${XDG_CURRENT_DESKTOP:-}: in
+    *:Hyprland:*) systemctl --user --quiet is-active ergenos-hyprland-session.target ;;
+    *) exit 0 ;;
+esac

@@ -1,0 +1,32 @@
+ErgenOS Hyprland
+
+Super                 Applications (release without another key)
+Super + R             Applications
+Super + Enter         Terminal
+Super + E             Files
+Super + Q             Close window
+Super + F             Fullscreen
+Super + Shift + F     Maximize / restore layout (keep panel)
+Super + V             Toggle floating window
+Super + J             Change tile split direction
+Super + arrows        Focus window
+Super + Shift + arrows Move window
+Super + comma         Desktop settings (including Displays and Autostart)
+Super + 1-9           Switch workspace
+Super + Shift + 1-9   Move window to workspace
+Super + left drag     Move window
+Super + right drag    Resize window
+Super + L             Lock screen
+Super + Shift + E     Session menu
+Super + F1            This reference
+Print                 Select screenshot area, copy to clipboard
+
+Volume, microphone, brightness and playback keys are supported.
+Defaults: Polish keyboard; automatic monitor resolution and scale.
+Overrides: ~/.config/ergenos-hyprland/local.lua
+
+Super+N             Notification history
+Super+Shift+N       Toggle Do Not Disturb
+
+Super+Shift+V       Clipboard history (text and images)
+Shift+Print         Copy the full screen to clipboard

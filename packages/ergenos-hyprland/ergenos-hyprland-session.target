@@ -1,0 +1,5 @@
+[Unit]
+Description=ErgenOS Hyprland graphical session and XDG applications
+BindsTo=graphical-session.target
+Wants=xdg-desktop-autostart.target
+After=graphical-session-pre.target

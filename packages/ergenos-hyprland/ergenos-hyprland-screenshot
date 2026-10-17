@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+case ${1:-region} in
+    region)
+        geometry=$(slurp -c 0aa7ff -b 030a14aa) || exit 0
+        [[ -n $geometry ]] || exit 0
+        grim -g "$geometry" - | wl-copy --type image/png ;;
+    screen) grim - | wl-copy --type image/png ;;
+    *) printf 'Usage: ergenos-hyprland-screenshot [region|screen]\n' >&2; exit 2 ;;
+esac
+notify-send 'ErgenOS' 'Screenshot copied to clipboard.'

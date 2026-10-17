@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+"""Session-only text/image clipboard history with an English Fuzzel picker."""
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+MAX_BYTES = 2 * 1024 * 1024
+
+def main():
+    runtime = os.environ.get('ERGENOS_HYPRLAND_RUNTIME')
+    if not runtime:
+        raise SystemExit('Clipboard history is available in the ErgenOS Hyprland session.')
+    os.umask(0o077)
+    database = Path(runtime) / 'clipboard.db'
+    if database.exists():
+        database.chmod(0o600)
+    command = ['cliphist', '-config-path', '/dev/null', '-db-path', str(database), '-max-items', '100']
+    mode = sys.argv[1] if len(sys.argv) > 1 else 'show'
+    def notify(message):
+        subprocess.run(['notify-send', 'Clipboard', message], check=False)
+    def picker(data, prompt):
+        return subprocess.run(['fuzzel', '--config', '/usr/share/ergenos-hyprland/fuzzel.ini',
+                               '--dmenu', '--only-match', '--with-nth', '2', '--prompt', prompt],
+                              input=data, stdout=subprocess.PIPE)
+    if mode == 'store':
+        if os.environ.get('CLIPBOARD_STATE', 'data') != 'data':
+            return
+        data = sys.stdin.buffer.read(MAX_BYTES + 1)
+        if data and len(data) <= MAX_BYTES:
+            subprocess.run(command + ['store'], input=data, check=True)
+    elif mode == 'show':
+        if not database.exists():
+            notify('History is empty. Copy some text or an image first.')
+            return
+        items = subprocess.check_output(command + ['list'])
+        if not items.strip():
+            notify('History is empty. Copy some text or an image first.')
+            return
+        choice = picker(items, 'Clipboard > ')
+        if choice.returncode or not choice.stdout.strip():
+            return
+        data = subprocess.check_output(command + ['decode'], input=choice.stdout)
+        subprocess.run(['wl-copy'], input=data, check=True)
+    elif mode == 'clear':
+        choice = picker(b'0\tCancel\n1\tClear history\n', 'Clear clipboard history? > ')
+        if choice.returncode == 0 and choice.stdout.startswith(b'1\t'):
+            if database.exists():
+                subprocess.run(command + ['wipe'], check=True)
+            subprocess.run(['wl-copy', '--clear'], check=True)
+            notify('History and current clipboard cleared.')
+    else:
+        raise SystemExit('Usage: ergenos-hyprland-clipboard [show|store|clear]')
+
+if __name__ == '__main__':
+    main()

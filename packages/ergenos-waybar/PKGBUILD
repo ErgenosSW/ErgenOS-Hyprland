@@ -1,0 +1,31 @@
+# Maintainer: ErgenOS Project
+pkgname=ergenos-waybar
+pkgver=0.15.0
+pkgrel=1
+pkgdesc='Private Waybar 0.15 for ErgenOS Hyprland with exact tray item filtering'
+arch=('x86_64')
+url='https://github.com/Alexays/Waybar'
+license=('MIT')
+options=('!debug')
+# Retain the standard package and its runtime libraries; never replace /usr/bin/waybar.
+depends=('waybar=0.15.0')
+makedepends=('meson' 'ninja' 'glib2-devel' 'wayland-protocols' 'pkgconf')
+source=("waybar-$pkgver.tar.gz::https://github.com/Alexays/Waybar/archive/refs/tags/$pkgver.tar.gz"
+        'tray-ignore-list.patch')
+sha256sums=('21c2bbef88c40473c355003582f9331d2f9b8a01efdcce0935edfc5f6b023a3e' 'bc8b5d41f26a9cbb2f3c8cfc4d631d6118a81dd08aaf9f646409309ffc2bf2a5')
+prepare() {
+    patch -d "Waybar-$pkgver" -p1 < tray-ignore-list.patch
+}
+build() {
+    meson setup build "Waybar-$pkgver" --prefix=/usr --buildtype=release --wrap-mode=nofallback \
+        -Dtests=disabled -Dman-pages=disabled -Dsystemd=disabled -Dcava=disabled \
+        -Ddbusmenu-gtk=enabled -Dpulseaudio=enabled -Dlibnl=enabled -Dlibudev=enabled -Dlogind=enabled -Drfkill=enabled
+    meson compile -C build -j 4
+}
+check() {
+    build/waybar --version
+}
+package() {
+    install -Dm755 build/waybar "$pkgdir/usr/lib/ergenos-hyprland/waybar"
+    install -Dm644 "Waybar-$pkgver/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

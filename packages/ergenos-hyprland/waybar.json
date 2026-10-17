@@ -1,0 +1,143 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 40,
+  "margin-top": 12,
+  "margin-left": 14,
+  "margin-right": 14,
+  "spacing": 4,
+  "modules-left": [
+    "custom/ergenos",
+    "hyprland/workspaces"
+  ],
+  "modules-center": [
+    "clock"
+  ],
+  "modules-right": [
+    "custom/notification",
+    "group/overflow",
+    "network",
+    "bluetooth",
+    "pulseaudio",
+    "backlight",
+    "battery",
+    "custom/session"
+  ],
+  "custom/ergenos": {
+    "format": " ",
+    "tooltip-format": "Applications",
+    "on-click": "ergenos-hyprland-menu",
+    "on-click-right": "ergenos-hyprland-menu settings"
+  },
+  "hyprland/workspaces": {
+    "format": " ",
+    "on-click": "activate",
+    "persistent-workspaces": {
+      "*": [
+        1,
+        2,
+        3,
+        4
+      ]
+    }
+  },
+  "clock": {
+    "format": "{:%H:%M}",
+    "tooltip-format": "{:%A, %d %B %Y}",
+    "on-click": "ergenos-hyprland-menu help"
+  },
+  "network": {
+    "format-wifi": " ",
+    "format-ethernet": " ",
+    "format-disconnected": " ",
+    "tooltip-format": "{ifname}: {ipaddr}\nClick: network settings",
+    "tooltip-format-wifi": "{essid} \u00b7 {signalStrength}%\nClick: network settings",
+    "on-click": "nm-connection-editor",
+    "format": " ",
+    "format-linked": " ",
+    "format-disabled": " "
+  },
+  "pulseaudio": {
+    "format": " ",
+    "format-muted": " ",
+    "on-click": "pavucontrol",
+    "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+    "scroll-step": 5,
+    "format-bluetooth": " ",
+    "format-bluetooth-muted": " ",
+    "tooltip-format": "Volume: {volume}%\nClick: audio settings \u00b7 right-click: mute",
+    "states": {
+      "low": 40
+    }
+  },
+  "battery": {
+    "format": " ",
+    "format-charging": " ",
+    "states": {
+      "critical": 10,
+      "warning": 20,
+      "low": 40,
+      "medium": 60,
+      "high": 80,
+      "full": 100
+    },
+    "tooltip-format": "{capacity}% \u00b7 {timeTo} \u00b7 {power} W\nClick: battery and power",
+    "format-plugged": " ",
+    "on-click": "python /usr/share/ergenos-hyprland/desktop-controls.py battery"
+  },
+  "tray": {
+    "icon-size": 16,
+    "spacing": 8,
+    "ignore-list": [
+      "nm-applet",
+      "blueman"
+    ]
+  },
+  "custom/session": {
+    "format": " ",
+    "tooltip-format": "Session",
+    "on-click": "ergenos-hyprland-menu session"
+  },
+  "backlight": {
+    "format": " ",
+    "tooltip-format": "Brightness: {percent}%\nClick: slider \u00b7 scroll: adjust",
+    "scroll-step": 5,
+    "on-click": "python /usr/share/ergenos-hyprland/desktop-controls.py brightness"
+  },
+  "group/overflow": {
+    "orientation": "horizontal",
+    "drawer": {
+      "transition-duration": 180,
+      "children-class": "overflow-item",
+      "click-to-reveal": true
+    },
+    "modules": [
+      "custom/overflow",
+      "tray"
+    ]
+  },
+  "custom/overflow": {
+    "format": " ",
+    "tooltip-format": "Show or hide tray icons"
+  },
+  "bluetooth": {
+    "format": " ",
+    "format-connected": " ",
+    "format-disabled": " ",
+    "format-off": " ",
+    "format-no-controller": "",
+    "tooltip-format": "Bluetooth: {status}\nClick: Bluetooth devices",
+    "tooltip-format-connected": "{num_connections} connected\n{device_enumerate}",
+    "on-click": "blueman-manager"
+  },
+  "custom/notification": {
+    "format": " ",
+    "return-type": "json",
+    "exec": "swaync-client --subscribe-waybar",
+    "restart-interval": 2,
+    "on-click": "swaync-client --toggle-panel",
+    "on-click-right": "swaync-client --toggle-dnd",
+    "tooltip-format": "Notifications\nClick: history \u00b7 right-click: Do Not Disturb",
+    "escape": true
+  }
+}

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3840" height="2160" viewBox="0 0 3840 2160">
+<defs><radialGradient id="glow"><stop stop-color="#087ac5" stop-opacity=".3"/><stop offset="1" stop-color="#030a14" stop-opacity="0"/></radialGradient><linearGradient id="sweep" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#0068ff" stop-opacity="0"/><stop offset=".55" stop-color="#0aa7ff" stop-opacity=".24"/><stop offset="1" stop-color="#54c3ff" stop-opacity="0"/></linearGradient></defs>
+<path fill="#030a14" d="M0 0h3840v2160H0z"/><ellipse cx="2650" cy="1350" rx="1900" ry="1300" fill="url(#glow)"/>
+<path d="M-300 2250C900 2150 1600 100 4100 680" fill="none" stroke="url(#sweep)" stroke-width="120"/>
+<path d="M-300 2290C900 2190 1600 140 4100 720" fill="none" stroke="#54c3ff" stroke-opacity=".08" stroke-width="2"/>
+<text x="3540" y="1840" text-anchor="end" font-family="sans-serif" font-weight="700" font-size="140" letter-spacing="-7" fill="#b8dfff" fill-opacity=".16">ErgenOS</text>
+<text x="3540" y="1908" text-anchor="end" font-family="sans-serif" font-size="25" letter-spacing="11" fill="#9db0c8" fill-opacity=".55">MAKE IT YOURS.</text>
+</svg>

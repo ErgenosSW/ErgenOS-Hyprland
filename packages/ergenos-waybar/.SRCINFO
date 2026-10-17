@@ -1,0 +1,20 @@
+pkgbase = ergenos-waybar
+	pkgdesc = Private Waybar 0.15 for ErgenOS Hyprland with exact tray item filtering
+	pkgver = 0.15.0
+	pkgrel = 1
+	url = https://github.com/Alexays/Waybar
+	arch = x86_64
+	license = MIT
+	makedepends = meson
+	makedepends = ninja
+	makedepends = glib2-devel
+	makedepends = wayland-protocols
+	makedepends = pkgconf
+	depends = waybar=0.15.0
+	options = !debug
+	source = waybar-0.15.0.tar.gz::https://github.com/Alexays/Waybar/archive/refs/tags/0.15.0.tar.gz
+	source = tray-ignore-list.patch
+	sha256sums = 21c2bbef88c40473c355003582f9331d2f9b8a01efdcce0935edfc5f6b023a3e
+	sha256sums = bc8b5d41f26a9cbb2f3c8cfc4d631d6118a81dd08aaf9f646409309ffc2bf2a5
+
+pkgname = ergenos-waybar

@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=ErgenOS Hyprland
+Comment=ErgenOS tiled Wayland desktop
+Exec=/usr/bin/ergenos-hyprland-session
+TryExec=/usr/bin/Hyprland
+Type=Application

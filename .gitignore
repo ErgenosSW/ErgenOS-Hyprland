@@ -1,0 +1,18 @@
+# Build products and downloaded sources
+**/src/
+**/pkg/
+**/build/
+*.pkg.tar.*
+*.src.tar.*
+*.tar.gz
+*.tar.xz
+*.tar.zst
+# Python/editor caches
+__pycache__/
+*.py[cod]
+*~
+*.swp
+.DS_Store
+# Local agent metadata
+.codex/
+.agents/

@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+set -euo pipefail
+: "${ERGENOS_HYPRLAND_RUNTIME:?Use the ErgenOS Hyprland session.}"
+# Do not duplicate services if configuration is reloaded or the hook runs twice.
+exec 9> "$ERGENOS_HYPRLAND_RUNTIME/services.lock"
+flock -n 9 || exit 0
+printf '%s\n' "$$" > "$ERGENOS_HYPRLAND_RUNTIME/services.pid"
+children=()
+autostart_started=false
+cleanup() {
+    if [[ $autostart_started == true ]]; then
+        systemctl --user stop ergenos-hyprland-session.target || true
+    fi
+    if ((${#children[@]})); then
+        kill "${children[@]}" 2>/dev/null || true
+        wait "${children[@]}" 2>/dev/null || true
+    fi
+    rm -f "$ERGENOS_HYPRLAND_RUNTIME/clipboard.db"
+    # Keep the lock inode until the session wrapper removes the runtime directory.
+    # Unlinking a held lock lets another runner lock a different inode.
+    rm -f "$ERGENOS_HYPRLAND_RUNTIME/services.pid"
+}
+trap cleanup EXIT
+trap 'exit 0' TERM INT
+start() { "$@" 9>&- & children+=("$!"); }
+# Import only the variables required by D-Bus-activated Wayland applications.
+activation_vars=(WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP HYPRLAND_INSTANCE_SIGNATURE)
+for variable in DISPLAY XAUTHORITY; do
+    [[ -v $variable ]] && activation_vars+=("$variable")
+done
+dbus-update-activation-environment --systemd "${activation_vars[@]}"
+# Re-select portal backends after leaving GNOME. Do not start a second graphical session for the same user.
+systemctl --user stop xdg-desktop-portal.service xdg-desktop-portal-hyprland.service xdg-desktop-portal-gtk.service
+systemctl --user start xdg-desktop-portal.service
+start swaybg -i /usr/share/ergenos-hyprland/wallpaper.png -m fill
+start env LANGUAGE=en LC_MESSAGES=en_US.UTF-8 swaync --config /usr/share/ergenos-hyprland/notifications.json --style /usr/share/ergenos-hyprland/notifications.css
+start /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+start python /usr/share/ergenos-hyprland/power-manager.py
+start python /usr/share/ergenos-hyprland/window-safety.py
+# Let the notification server claim its bus before clients and autostart apps run.
+if ! gdbus wait --session --timeout=10 org.erikreider.swaync; then
+    printf 'ErgenOS notification center did not become ready.\n' >&2
+fi
+start wl-paste --type text --watch ergenos-hyprland-clipboard store
+start wl-paste --type image --watch ergenos-hyprland-clipboard store
+start /usr/lib/ergenos-hyprland/waybar --config /usr/share/ergenos-hyprland/waybar.json --style /usr/share/ergenos-hyprland/waybar.css
+# Refresh the generator so user changes are picked up on each login.
+systemctl --user daemon-reload
+autostart_started=true
+if ! systemctl --user start ergenos-hyprland-session.target; then
+    notify-send -u critical 'ErgenOS autostart' 'Some startup applications could not be started.' || true
+fi
+wait

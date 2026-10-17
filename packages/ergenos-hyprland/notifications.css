@@ -1,0 +1,41 @@
+/* Extend the installed SwayNC layout, keeping its action and accessibility styles. */
+@import url("/etc/xdg/swaync/style.css");
+:root {
+  --cc-bg: #081424;
+  --noti-border-color: rgba(84, 195, 255, 0.22);
+  --noti-bg: 11, 32, 53;
+  --noti-bg-alpha: 1;
+  --noti-bg-darker: #06101d;
+  --noti-bg-hover: #10304b;
+  --noti-bg-focus: rgba(10, 167, 255, 0.14);
+  --noti-close-bg: #18354e;
+  --noti-close-bg-hover: #245273;
+  --text-color: #eaf3ff;
+  --text-color-disabled: #91a9c2;
+  --bg-selected: #0aa7ff;
+  --border-radius: 16px;
+  --notification-icon-size: 40px;
+  --notification-group-icon-size: 22px;
+  --font-size-body: 13px;
+  --font-size-summary: 14px;
+  --notification-shadow: none;
+}
+* { font-family: Inter, sans-serif; }
+.control-center { border: 1px solid rgba(84, 195, 255, 0.28); padding: 10px; }
+.widget-title { margin: 4px 6px; padding: 10px 8px; }
+.widget-title > label { font-size: 20px; font-weight: 600; }
+.widget-title > button { background: #0b2035; color: #54c3ff; border: 1px solid rgba(84, 195, 255, 0.2); padding: 8px 12px; border-radius: 10px; }
+.widget-title > button:hover { background: #10304b; }
+.widget-dnd { background: #0b2035; margin: 4px 6px 12px; padding: 12px; border: 1px solid rgba(143, 190, 235, 0.14); }
+.widget-dnd label { font-size: 13px; }
+.widget-dnd switch { background: #32445a; }
+.widget-dnd switch:checked { background: #0aa7ff; }
+.widget-dnd switch slider { background: #eaf3ff; }
+.notification-row .notification-background { padding: 6px; }
+.notification-row .notification-background .notification .notification-default-action { padding: 12px; }
+.notification-row .notification-background .notification.critical { border-color: #ff7c86; }
+.notification-row .notification-background .notification .notification-default-action .notification-content .text-box .time { color: #91a9c2; font-size: 11px; font-weight: 400; }
+.control-center .control-center-list-placeholder { color: #91a9c2; opacity: 1; font-size: 14px; }
+.floating-notifications { padding-top: 14px; padding-right: 8px; }
+
+.notification-group, .notification-group:focus { background: transparent; outline: none; }

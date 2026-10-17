@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ -n ${HYPRLAND_INSTANCE_SIGNATURE:-} ]]; then
+    printf 'ErgenOS Hyprland is already running.\n' >&2
+    exit 1
+fi
+: "${XDG_RUNTIME_DIR:?Start this session from a display manager or a local login.}"
+export XDG_CURRENT_DESKTOP=Hyprland
+export XDG_SESSION_DESKTOP=ergenos-hyprland
+export XDG_SESSION_TYPE=wayland
+export ERGENOS_HYPRLAND_RUNTIME
+ERGENOS_HYPRLAND_RUNTIME=$(mktemp -d "$XDG_RUNTIME_DIR/ergenos-hyprland.XXXXXXXX")
+compositor_pid=
+cleanup() {
+    local services_pid
+    if [[ -r $ERGENOS_HYPRLAND_RUNTIME/services.pid ]]; then
+        read -r services_pid < "$ERGENOS_HYPRLAND_RUNTIME/services.pid"
+        [[ $services_pid =~ ^[0-9]+$ ]] && kill -TERM "$services_pid" 2>/dev/null || true
+    fi
+    # Keep Wayland alive while the runner stops its clients, including hypridle.
+    flock -w 15 "$ERGENOS_HYPRLAND_RUNTIME/services.lock" true || true
+    if [[ -n $compositor_pid ]]; then
+        kill -TERM "$compositor_pid" 2>/dev/null || true
+        wait "$compositor_pid" 2>/dev/null || true
+    fi
+    rm -f "$ERGENOS_HYPRLAND_RUNTIME/services.pid" "$ERGENOS_HYPRLAND_RUNTIME/services.lock"
+    rm -f "$ERGENOS_HYPRLAND_RUNTIME/window-safety.lock"
+    rmdir "$ERGENOS_HYPRLAND_RUNTIME" 2>/dev/null || true
+}
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+start-hyprland -- --config /usr/share/ergenos-hyprland/hyprland.lua &
+compositor_pid=$!
+status=0
+wait "$compositor_pid" || status=$?
+compositor_pid=
+exit "$status"
