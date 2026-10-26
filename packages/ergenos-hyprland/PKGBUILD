@@ -1,7 +1,7 @@
 # Maintainer: Szymon Pilip <szymon.pilip@ergenos.dev>
 pkgname=ergenos-hyprland
 pkgver=0.1.0
-pkgrel=30
+pkgrel=28
 pkgdesc='Optional ErgenOS tiled Hyprland session with coordinated desktop styling'
 arch=('any')
 url='https://github.com/ErgenosSW/ErgenOS-Hyprland'
@@ -31,10 +31,10 @@ source+=('notification-session-check' 'swaync-session.conf' 'test_notifications.
 source+=('panel-bell.svg' 'panel-bell-pending.svg' 'panel-bell-dnd.svg' 'panel-bell-dnd-pending.svg' 'panel-battery-charging.svg' 'panel-battery-low.svg' 'panel-battery.svg' 'panel-bluetooth-off.svg' 'panel-bluetooth.svg' 'panel-brightness.svg' 'panel-ethernet.svg' 'panel-more.svg' 'panel-power.svg' 'panel-volume-low.svg' 'panel-volume-muted.svg' 'panel-volume.svg' 'panel-wifi-off.svg' 'panel-wifi.svg')
 source+=('THIRD_PARTY.md')
 sha256sums=(
-    'd30b3ca02a9491b3bd349dbdd0d6d85d387cd60fe5577ca99b59ddec1e953e34'
+    '169821925a36da3f140d09f379f42940bc6510c346578a81421165159f30b708'
     'f2f4184c93ef6970f1504e511673feb06a5ed95ee81834f62e937f9868f16cf6'
-    '21d88f3cb9de2833ba124e73584f3f756a42f9f8201c77ab829120d0bd68bd37'
-    '30aee8678d37732daa911072dec969744b71e4b51ea9452261bbc4682a370c7c'
+    '3c6cc434f1e307190b5a79f82740e4e639e04d17cefc28a30c2d37ed5b9199a9'
+    'a4493dc40dbdc310dae1669fa236e3ca8e6d10c467ee745fffe940c3df6a96a4'
     'fda5ba2313f198837049064e5872244cc4909be4135abcb73dacc7b05a19af31'
     '8f9cc78ac6d092ff579c188b03544ce420e4a8b6e0e074b38e6fb0f14d0e8874'
     '99920cf939e7c624ce2e1d36d186746b4d553dd72c7542776a591a6afa635a32'
@@ -51,11 +51,11 @@ sha256sums=(
     'd24913edca0bfe9a49ec6f450e56f29be93e56f268c0476aea335cd9023677b3'
     '2df054ee066e7436e227be394f258f4bfeaee64e03ade90942b8480f8c665e5e'
     '13131b4c955b8b00ca373f9e6a62b12fbd169831027e4f2b7199c8638754137a'
-    '5afd1e1c5b8fb73fa48f22b5ce1f3dfbc36ca24fcb8db99d035fd3831ae2e8a0'
+    'b6a69229b0ae812262e098ce99346819de7882ef925d77a5907277cdd72fc050'
     'cf6f6888a8dd06a4f7ee69cedac51eb7f4cee5255b4d57883cceee2f1735a465'
     '5e7d290c75443435e9d4cfdf19ad38deb99f0e0e8d58679f63df77543101f6cd'
     '8b5ebef6e2a9f412f30b5b5bbc5c88bbd535a43db29cf1a39b66213818ad0607'
-    'c3e048c2db9bd937f8230a5ec1bc8ddfcbe2d8f37d1f9ab1ad98bf9e703d04da'
+    '6019092dc4f8e6ab20f4fb1155f9ec7a0cf36c72f830d9cd1353821c052e0917'
     '3ccd973babb4866a76d5cf8f26b0b05f42027f74a01ff588a753ebf3994ba276'
     'a415274b717ee0bcb7aab865027bdb25237df03dbd0a1d353eea3a1b24ba3288'
     '52a77cbe5f04bc0a7a0f49a2cee9bfe03881f3634a5dad11af177c867486e428'
@@ -63,9 +63,9 @@ sha256sums=(
     '2fb8dd2a73d5e2d936ac548f1e2bee7a50287c273620eb92b1ef83dc45271a8a'
     '06469f56214254c33fe864d4406c424778598e4f9b86d06226f2aad439e6fa3b'
     '289b0b33f89b39dbd53cd27c7f12ec376f444e25a608edbbfeee36cc00c51199'
-    'df354f376e4b116cb28464bfa24bb42caa268cb85b687de82055fae9ff549fb4'
+    '40a4774d71486974233ed84727542f8d720b9966056b09d7be28825b2419ff47'
     'e28f1d2d599c8efb932014f2edea013144d5a00f18f9b635ae7f7c39a98f607e'
-    '745441f3c9682a0dabd227c5734dccb8d603221049d53ec3a3ba6c51e6252aef'
+    'a9a6e83e0fa24b3be2e853e2a8d441cfba3cb3e6e6b8f5f462ec011abb2a6a12'
     '1a577de11e3db9c42fcb22027804cf8cfa7655001912095599231eaa90bcc66c'
     '405a26970657969828f928b422bbf3906f758218b31127e296ba176e1dbf309e'
     'de094bc4775da6b2375f697de0f01de601937e4d2d4fbc0ed457acba3cfe8cc4'
