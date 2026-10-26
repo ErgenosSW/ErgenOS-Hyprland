@@ -1,4 +1,4 @@
-# Maintainer: ErgenOS Project
+# Maintainer: Szymon Pilip <szymon.pilip@ergenos.dev>
 pkgname=ergenos-waybar
 pkgver=0.15.0
 pkgrel=1
