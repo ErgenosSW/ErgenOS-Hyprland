@@ -1,0 +1,93 @@
+name: Build preview release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing preview package tag, including pkgrel
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: preview-${{ inputs.release_tag || github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:base-devel
+    steps:
+      - name: Install build tools
+        run: pacman -Syu --noconfirm git sudo python
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+      - name: Validate preview version
+        shell: bash
+        run: |
+          set -euo pipefail
+          source packages/ergenos-hyprland/PKGBUILD
+          test "$RELEASE_TAG" = "v${pkgver}-${pkgrel}"
+      - name: Create build user
+        run: |
+          useradd -m builder
+          printf 'builder ALL=(ALL) NOPASSWD: /usr/bin/pacman\n' > /etc/sudoers.d/builder
+          chmod 0440 /etc/sudoers.d/builder
+          chown -R builder:builder "$GITHUB_WORKSPACE"
+      - name: Build private panel helper
+        working-directory: packages/ergenos-waybar
+        run: sudo -u builder makepkg --syncdeps --cleanbuild --noconfirm
+      - name: Install helper in disposable build container
+        shell: bash
+        run: |
+          set -euo pipefail
+          pacman -U --noconfirm packages/ergenos-waybar/*.pkg.tar.zst
+      - name: Build and check preview session
+        working-directory: packages/ergenos-hyprland
+        run: sudo -u builder makepkg --syncdeps --cleanbuild --noconfirm
+      - name: Record artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir artifacts
+          cp packages/ergenos-waybar/*.pkg.tar.zst packages/ergenos-hyprland/*.pkg.tar.zst artifacts/
+          git rev-parse HEAD > artifacts/SOURCE-REVISION.txt
+          (cd artifacts && sha256sum *.pkg.tar.zst > SHA256SUMS)
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: ergenos-hyprland-${{ env.RELEASE_TAG }}-unsigned
+          path: artifacts/
+          if-no-files-found: error
+
+  draft:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+      - name: Prepare preview draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo 'Existing release or draft retained.'
+            exit 0
+          fi
+          gh release create "$RELEASE_TAG" --draft --prerelease --latest=false \
+            --verify-tag --title "ErgenOS Hyprland ${RELEASE_TAG#v} preview" \
+            --notes-file RELEASE-NOTES.md
