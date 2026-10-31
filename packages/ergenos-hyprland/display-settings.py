@@ -19,6 +19,27 @@ def fingerprint(paths):
     return tuple(result)
 
 
+def run_nwg():
+    from nwg_displays import main as nwg
+    from nwg_displays.__about__ import __version__
+    if __version__ == '0.5.0':
+        # GTK's changed signal fires before SpinButton commits its numeric value.
+        # Rebuilding the form here restores the previous value (e.g. 60 Hz).
+        updating = False
+        def refresh_changed(widget):
+            nonlocal updating
+            if updating or nwg.selected_output_button is None:
+                return
+            updating = True
+            try:
+                widget.update()
+                nwg.selected_output_button.refresh = widget.get_value()
+            finally:
+                updating = False
+        nwg.on_refresh_changed = refresh_changed
+    nwg.main()
+
+
 def main():
     config = Path(os.environ.get('XDG_CONFIG_HOME', Path.home() / '.config'))
     directory = config / 'ergenos-hyprland' / 'displays'
@@ -50,7 +71,7 @@ def main():
             paths[1].write_text('-- No workspace overrides.\n')
         good_files = {path: path.read_bytes() for path in paths}
         previous = fingerprint(paths)
-        child = subprocess.Popen(['nwg-displays', '--monitors_path', str(directory / 'monitors.conf'),
+        child = subprocess.Popen([sys.executable, __file__, '--nwg-displays', '--monitors_path', str(directory / 'monitors.conf'),
                                   '--workspaces_path', str(directory / 'workspaces.conf')])
         pending = None
         changed_at = 0
@@ -88,4 +109,8 @@ def main():
 
 
 if __name__ == '__main__':
-    raise SystemExit(main())
+    if len(sys.argv) > 1 and sys.argv[1] == '--nwg-displays':
+        del sys.argv[1]
+        run_nwg()
+    else:
+        raise SystemExit(main())

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 config=/usr/share/ergenos-hyprland/fuzzel.ini
+user_config=${XDG_CONFIG_HOME:-$HOME/.config}/ergenos-hyprland/fuzzel.ini
+[[ ! -f $user_config ]] || config=$user_config
 case ${1:-apps} in
     apps) exec fuzzel --config "$config" ;;
     settings)

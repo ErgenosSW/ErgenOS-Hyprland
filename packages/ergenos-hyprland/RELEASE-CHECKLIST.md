@@ -2,7 +2,7 @@
 
 ## Build and review
 
-- [x] Official-repository dependencies plus the local private panel helper; compositor compatibility bound.
+- [x] Official-repository dependencies plus the local private panel helper; minimum compositor version recorded without blocking rolling updates.
 - [x] Explicit source checksums, native parsers and 25 regression tests.
 - [x] No install hook that seeds or overwrites home settings.
 - [x] README and shortcut reference describe the current implementation.

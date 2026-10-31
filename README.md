@@ -4,7 +4,9 @@ A customized Hyprland session for ErgenOS, maintained by the ErgenOS project.
 Independent project, not affiliated with or endorsed by the Hyprland project.
 
 Optional preview: a separate tiled Wayland session alongside GNOME, using the
-ErgenOS navy-and-blue styling. Tested compositor series: Hyprland 0.56.x.
+ErgenOS navy-and-blue styling. The session was validated on Hyprland 0.56.x;
+newer Hyprland releases are accepted by the package so rolling-system updates
+are not blocked, but still require normal runtime acceptance testing.
 This repository contains session configuration and integration tools, not a fork
 of the Hyprland compositor.
 

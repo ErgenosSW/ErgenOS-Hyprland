@@ -10,6 +10,13 @@ SOURCE = Path(__file__).resolve().parent
 
 
 class IntegrationTests(unittest.TestCase):
+    def test_wow_fullscreen_is_not_changed_by_xwayland_requests(self):
+        config = (SOURCE / 'hyprland.lua').read_text()
+        self.assertIn('class = "^steam_app_(default|wow)$", title = "^World of Warcraft$"', config)
+        self.assertIn('fullscreen_state = "2 0"', config)
+        self.assertIn('suppress_event = "fullscreen maximize"', config)
+        self.assertIn('class = "^steam_app_(default|wow)$", title = "^Battle[.]net$"', config)
+
     def test_native_xdg_generator_honors_hidden_user_override(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -73,7 +80,14 @@ if os.environ.get('TEST_DELETE') == '1': monitor.unlink()
 else: monitor.write_text('-- new saved monitor rules\\n')
 time.sleep(1)
 ''')
+            fake_module = root / 'nwg_displays'
+            fake_module.mkdir()
+            (fake_module / '__init__.py').write_text('')
+            (fake_module / '__about__.py').write_text("__version__ = 'test'\n")
+            (fake_module / 'main.py').write_text(
+                "import subprocess,sys\ndef main():\n subprocess.run(['nwg-displays', *sys.argv[1:]], check=True)\n")
             env = os.environ.copy()
+            env['PYTHONPATH'] = str(root)
             env.update(PATH=str(binary) + ':' + env['PATH'], XDG_CONFIG_HOME=str(config),
                        XDG_RUNTIME_DIR=str(root), TEST_ROOT=str(root), TEST_INVALID=str(int(invalid)), TEST_DELETE=str(int(deleted)),
                        TEST_RELOAD_FAILED=str(int(reload_failed)))

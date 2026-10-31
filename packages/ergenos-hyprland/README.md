@@ -127,11 +127,15 @@ and rebuild for deeper changes. No global GNOME or GTK appearance is imposed.
 ErgenCTL, ErgenPac and Welcome are optional applications. XWayland is rendered
 without compositor enlargement to avoid blurred Wine/game windows at fractional
 scaling. X11 applications may need their own DPI/font settings. Native Wayland
-applications retain normal display scaling. Battle.net with its Wine default
-class and exact title opens floating, centered, with room for its desktop layout.
-World of Warcraft with the same class and exact title starts floating and
-fullscreen without geometry animations. A fresh launch was visually checked after
-this rule fixed the overlapping character-selection UI.
+applications retain normal display scaling. Battle.net with its Faugus Wine class
+and exact title opens floating, centered, with room for its desktop layout. Both
+the current `steam_app_wow` class and older `steam_app_default` entries are
+supported. World of Warcraft with the same class and exact title starts floating
+and fullscreen without geometry animations. Hyprland owns fullscreen while WoW
+receives a native-sized window, preventing repeated XWayland fullscreen requests
+from exposing Waybar without making a dual-monitor client select another output's
+lower fullscreen resolution. A fresh launch was visually checked after the
+original rule fixed the overlapping character-selection UI.
 This package does not rewrite third-party launchers or change Wine prefix DPI.
 
 ## Removal

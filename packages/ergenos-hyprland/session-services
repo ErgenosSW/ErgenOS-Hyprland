@@ -32,8 +32,13 @@ dbus-update-activation-environment --systemd "${activation_vars[@]}"
 # Re-select portal backends after leaving GNOME. Do not start a second graphical session for the same user.
 systemctl --user stop xdg-desktop-portal.service xdg-desktop-portal-hyprland.service xdg-desktop-portal-gtk.service
 systemctl --user start xdg-desktop-portal.service
+config_home=${XDG_CONFIG_HOME:-$HOME/.config}/ergenos-hyprland
+waybar_config=/usr/share/ergenos-hyprland/waybar.json
+notification_config=/usr/share/ergenos-hyprland/notifications.json
+[[ ! -f $config_home/waybar.json ]] || waybar_config=$config_home/waybar.json
+[[ ! -f $config_home/notifications.json ]] || notification_config=$config_home/notifications.json
 start swaybg -i /usr/share/ergenos-hyprland/wallpaper.png -m fill
-start env LANGUAGE=en LC_MESSAGES=en_US.UTF-8 swaync --config /usr/share/ergenos-hyprland/notifications.json --style /usr/share/ergenos-hyprland/notifications.css
+start env LANGUAGE=en LC_MESSAGES=en_US.UTF-8 swaync --config "$notification_config" --style /usr/share/ergenos-hyprland/notifications.css
 start /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 start python /usr/share/ergenos-hyprland/power-manager.py
 start python /usr/share/ergenos-hyprland/window-safety.py
@@ -43,7 +48,7 @@ if ! gdbus wait --session --timeout=10 org.erikreider.swaync; then
 fi
 start wl-paste --type text --watch ergenos-hyprland-clipboard store
 start wl-paste --type image --watch ergenos-hyprland-clipboard store
-start /usr/lib/ergenos-hyprland/waybar --config /usr/share/ergenos-hyprland/waybar.json --style /usr/share/ergenos-hyprland/waybar.css
+start /usr/lib/ergenos-hyprland/waybar --config "$waybar_config" --style /usr/share/ergenos-hyprland/waybar.css
 # Refresh the generator so user changes are picked up on each login.
 systemctl --user daemon-reload
 autostart_started=true

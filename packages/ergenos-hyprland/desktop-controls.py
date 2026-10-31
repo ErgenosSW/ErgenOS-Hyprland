@@ -75,8 +75,8 @@ def main():
             box.append(description)
             if mode == 'brightness':
                 try:
-                    current = int(subprocess.check_output(['brightnessctl', 'get'], text=True))
-                    maximum = int(subprocess.check_output(['brightnessctl', 'max'], text=True))
+                    current = int(subprocess.check_output(['brightnessctl', '--class=backlight', 'get'], text=True))
+                    maximum = int(subprocess.check_output(['brightnessctl', '--class=backlight', 'max'], text=True))
                     percent = max(1, round(current * 100 / maximum))
                 except (OSError, ValueError, subprocess.CalledProcessError, ZeroDivisionError):
                     value.set_text('Brightness control unavailable')
@@ -92,7 +92,7 @@ def main():
                         self.pending = None
                         setting = round(slider.get_value())
                         try:
-                            subprocess.run(['brightnessctl', '--min-value=1', 'set', f'{setting}%'], check=True, capture_output=True)
+                            subprocess.run(['brightnessctl', '--class=backlight', '--min-value=1', 'set', f'{setting}%'], check=True, capture_output=True)
                             description.set_text('Screen brightness')
                         except (OSError, subprocess.CalledProcessError):
                             description.set_text('Unable to adjust brightness.')

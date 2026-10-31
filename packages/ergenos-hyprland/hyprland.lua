@@ -66,8 +66,8 @@ exec("XF86AudioRaiseVolume", "wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+", {
 exec("XF86AudioLowerVolume", "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-", { locked = true, repeating = true })
 exec("XF86AudioMute", "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle", { locked = true })
 exec("XF86AudioMicMute", "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle", { locked = true })
-exec("XF86MonBrightnessUp", "brightnessctl set +5%", { locked = true, repeating = true })
-exec("XF86MonBrightnessDown", "brightnessctl --min-value=1 set 5%-", { locked = true, repeating = true })
+exec("XF86MonBrightnessUp", "brightnessctl --class=backlight set +5%", { locked = true, repeating = true })
+exec("XF86MonBrightnessDown", "brightnessctl --class=backlight --min-value=1 set 5%-", { locked = true, repeating = true })
 exec("XF86AudioPlay", "playerctl play-pause", { locked = true })
 exec("XF86AudioNext", "playerctl next", { locked = true })
 exec("XF86AudioPrev", "playerctl previous", { locked = true })
@@ -93,11 +93,14 @@ hl.window_rule({ name = "ergenos-power-settings", match = { class = "io.github.e
 
 -- Battle.net's fixed desktop layout must not be squeezed into a narrow tile.
 -- Its Wine class is shared by other programs, so also require the exact title.
-hl.window_rule({ name = "ergenos-battlenet", match = { class = "^steam_app_default$", title = "^Battle[.]net$" }, float = true, center = true, size = "1100 680" })
+-- Faugus currently exposes steam_app_wow; retain steam_app_default for older entries.
+hl.window_rule({ name = "ergenos-battlenet", match = { class = "^steam_app_(default|wow)$", title = "^Battle[.]net$" }, float = true, center = true, size = "1100 680" })
 
 -- Wine can retain an inconsistent viewport while its initial window is resized.
--- Keep this specific game out of tiling and animated geometry transitions.
-hl.window_rule({ name = "ergenos-wow", match = { class = "^steam_app_default$", title = "^World of Warcraft$" }, float = true, fullscreen = true, no_anim = true })
+-- Keep compositor fullscreen while presenting a native-sized window to WoW.
+-- This blocks XWayland fullscreen oscillation without letting a dual-monitor
+-- client select another output's lower fullscreen resolution.
+hl.window_rule({ name = "ergenos-wow", match = { class = "^steam_app_(default|wow)$", title = "^World of Warcraft$" }, float = true, fullscreen_state = "2 0", suppress_event = "fullscreen maximize", no_anim = true })
 
 -- Local overrides follow all packaged defaults, including window rules.
 local override = config_home .. "/ergenos-hyprland/local.lua"
