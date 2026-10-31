@@ -1,4 +1,4 @@
-# ErgenOS Hyprland 0.1.0-31 preview
+# ErgenOS Hyprland 0.1.0-33 preview
 
 Optional tiled session alongside GNOME, with coordinated styling, desktop
 controls, clipboard history and session supervision. This is configuration and

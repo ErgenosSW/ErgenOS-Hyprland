@@ -1,7 +1,7 @@
 pkgbase = ergenos-hyprland
 	pkgdesc = Optional ErgenOS tiled Hyprland session with coordinated desktop styling
 	pkgver = 0.1.0
-	pkgrel = 31
+	pkgrel = 33
 	url = https://github.com/ErgenosSW/ErgenOS-Hyprland
 	arch = any
 	license = GPL-3.0-or-later

@@ -1,8 +1,8 @@
 # Preview releases
 
-The current local package is 0.1.0-31. Commit the intended session changes only
+The current local package is 0.1.0-33. Commit the intended session changes only
 after review; do not tag the initial repository commit as this updated package.
-Use an annotated v0.1.0-31 tag on the reviewed commit. Preserve the experimental
+Use an annotated v0.1.0-33 tag on the reviewed commit. Preserve the experimental
 preview designation. Existing GNOME packages and ISO settings are independent.
 
 The preview workflow builds the panel helper first, installs it in a disposable

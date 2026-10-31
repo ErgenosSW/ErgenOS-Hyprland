@@ -1,7 +1,7 @@
 # Maintainer: Szymon Pilip <szymon.pilip@ergenos.dev>
 pkgname=ergenos-hyprland
 pkgver=0.1.0
-pkgrel=31
+pkgrel=33
 pkgdesc='Optional ErgenOS tiled Hyprland session with coordinated desktop styling'
 arch=('any')
 url='https://github.com/ErgenosSW/ErgenOS-Hyprland'
